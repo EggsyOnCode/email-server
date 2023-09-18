@@ -9,7 +9,6 @@ app.use(express.json());
 
 //init the nodemailer transport obj
 
-
 app.post("/sendEmail", async (req, res) => {
   try {
     const sender = req.body.from;
@@ -17,7 +16,7 @@ app.post("/sendEmail", async (req, res) => {
     const sub = req.body.subject;
     const content = req.body.email;
 
-    console.log(sender, receiver, sub, content);
+    // console.log(sender, receiver, sub, content, req.body.key);
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -27,9 +26,8 @@ app.post("/sendEmail", async (req, res) => {
         ciphers: "SSLv3",
       },
       auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
         user: sender,
-        pass: req.body.appkey,
+        pass: req.body.key,
       },
     });
 
@@ -40,9 +38,7 @@ app.post("/sendEmail", async (req, res) => {
       text: content,
     });
 
-    res
-      .status(200)
-      .json({ message: `${info.messageId} Email sent successfully!` });
+    res.status(200).json({ message: `Email sent successfully!` });
   } catch (error) {
     console.error("Error sending email:", error);
     res.status(500).json({ error: "Email could not be sent" });
